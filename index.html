@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AccessAI – Web Accessibility for Everyone</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap');
+
+  :root {
+    --red: #E64040;
+    --red-hover: #CF3A3A;
+    --red-dim: rgba(230,64,64,0.08);
+    --red-border: rgba(230,64,64,0.20);
+    --white: #FFFFFF;
+    --bg: #F7F7F8;
+    --surface: #FFFFFF;
+    --border: #E4E4E6;
+    --border-light: #F0F0F2;
+    --text-1: #1D1D1F;
+    --text-2: #6E6E73;
+    --text-3: #AEAEB2;
+    --nav-height: 62px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text-1);
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ─────────────────────────────────────
+     NAV
+  ───────────────────────────────────── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    height: var(--nav-height);
+    background: rgba(255,255,255,0.88);
+    backdrop-filter: blur(20px) saturate(1.8);
+    -webkit-backdrop-filter: blur(20px) saturate(1.8);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 48px;
+    gap: 0;
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    text-decoration: none;
+    margin-right: auto;
+  }
+
+  .nav-logo-mark {
+    width: 32px; height: 32px;
+    background: var(--red);
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 8px rgba(230,64,64,0.28);
+  }
+
+  .nav-logo-mark svg {
+    width: 18px; height: 18px;
+    fill: none; stroke: white;
+    stroke-width: 2.2; stroke-linecap: round;
+  }
+
+  .nav-logo-name {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text-1);
+    letter-spacing: -0.5px;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-right: 28px;
+  }
+
+  .nav-link {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-2);
+    padding: 7px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.14s, background 0.14s;
+  }
+
+  .nav-link:hover { color: var(--text-1); background: var(--border-light); }
+
+  .nav-cta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-outline {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--text-2);
+    padding: 8px 18px;
+    border-radius: 9px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: white;
+    font-family: inherit;
+    transition: all 0.14s;
+    text-decoration: none;
+    display: inline-flex; align-items: center;
+  }
+
+  .btn-outline:hover { border-color: #C8C8CA; color: var(--text-1); }
+
+  .btn-primary {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: white;
+    padding: 8px 20px;
+    border-radius: 9px;
+    cursor: pointer;
+    border: none;
+    background: var(--red);
+    font-family: inherit;
+    display: inline-flex; align-items: center; gap: 8px;
+    box-shadow: 0 2px 10px rgba(230,64,64,0.30);
+    transition: all 0.14s;
+    text-decoration: none;
+  }
+
+  .btn-primary:hover { background: var(--red-hover); box-shadow: 0 4px 14px rgba(230,64,64,0.38); transform: translateY(-1px); }
+
+  .btn-primary svg, .btn-outline svg {
+    width: 15px; height: 15px;
+    fill: none; stroke: currentColor;
+    stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  }
+
+  /* ─────────────────────────────────────
+     SECTIONS SHARED
+  ───────────────────────────────────── */
+  section {
+    padding: 96px 48px;
+  }
+
+  .section-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--red-dim);
+    border: 1px solid var(--red-border);
+    border-radius: 100px;
+    padding: 4px 14px 4px 8px;
+    margin-bottom: 20px;
+  }
+
+  .section-tag-dot {
+    width: 6px; height: 6px;
+    background: var(--red);
+    border-radius: 50%;
+  }
+
+  .section-tag-text {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--red);
+    letter-spacing: 0.2px;
+  }
+
+  .section-title {
+    font-size: 42px;
+    font-weight: 800;
+    color: var(--text-1);
+    letter-spacing: -1.4px;
+    line-height: 1.1;
+    margin-bottom: 16px;
+  }
+
+  .section-title .red { color: var(--red); }
+
+  .section-sub {
+    font-size: 17px;
+    color: var(--text-2);
+    line-height: 1.6;
+    font-weight: 400;
+    max-width: 560px;
+  }
+
+  /* ─────────────────────────────────────
+     HERO
+  ───────────────────────────────────── */
+  #hero {
+    padding-top: calc(var(--nav-height) + 80px);
+    padding-bottom: 80px;
+    padding-left: 48px;
+    padding-right: 48px;
+    background: white;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    gap: 64px;
+    align-items: center;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    border-radius: 100px;
+    padding: 5px 14px 5px 7px;
+    margin-bottom: 26px;
+  }
+
+  .hero-badge-chip {
+    background: var(--red);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 100px;
+    letter-spacing: 0.4px;
+  }
+
+  .hero-badge-text {
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--text-2);
+  }
+
+  .hero-h1 {
+    font-size: 62px;
+    font-weight: 800;
+    color: var(--text-1);
+    line-height: 1.06;
+    letter-spacing: -2.5px;
+    margin-bottom: 22px;
+  }
+
+  .hero-h1 .red { color: var(--red); }
+
+  .hero-p {
+    font-size: 17px;
+    color: var(--text-2);
+    line-height: 1.65;
+    font-weight: 400;
+    max-width: 480px;
+    margin-bottom: 36px;
+  }
+
+  .hero-btns {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .btn-hero {
+    font-size: 15px;
+    font-weight: 600;
+    color: white;
+    padding: 14px 28px;
+    border-radius: 11px;
+    cursor: pointer;
+    border: none;
+    background: var(--red);
+    font-family: inherit;
+    display: inline-flex; align-items: center; gap: 10px;
+    box-shadow: 0 4px 18px rgba(230,64,64,0.32);
+    transition: all 0.16s;
+  }
+
+  .btn-hero:hover { background: var(--red-hover); transform: translateY(-2px); box-shadow: 0 6px 22px rgba(230,64,64,0.38); }
+
+  .btn-hero-ghost {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-2);
+    cursor: pointer;
+    background: none; border: none;
+    font-family: inherit;
+    transition: color 0.14s;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .btn-hero-ghost:hover { color: var(--text-1); }
+
+  /* Extension popup preview card */
+  .popup-preview {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.14), 0 2px 8px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.06);
+    overflow: hidden;
+    width: 320px;
+    justify-self: end;
+  }
+
+  .pp-header {
+    padding: 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+    background: white;
+  }
+
+  .pp-logo {
+    width: 32px; height: 32px;
+    background: var(--red);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 6px rgba(230,64,64,0.28);
+  }
+
+  .pp-logo svg { width: 17px; height: 17px; fill: none; stroke: white; stroke-width: 2.2; stroke-linecap: round; }
+
+  .pp-title { font-size: 13.5px; font-weight: 700; color: var(--text-1); letter-spacing: -0.3px; }
+  .pp-sub { font-size: 11px; color: var(--text-3); }
+
+  .pp-status {
+    margin-left: auto;
+    display: flex; align-items: center; gap: 5px;
+    font-size: 11px; font-weight: 600; color: #2D9D2D;
+    background: #EBF7EB; padding: 3px 10px; border-radius: 100px;
+  }
+
+  .pp-status-dot {
+    width: 5px; height: 5px; background: #34C759; border-radius: 50%;
+    animation: blink 2s infinite;
+  }
+
+  @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.35; } }
+
+  .pp-voice {
+    padding: 14px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+  }
+
+  .pp-mic {
+    width: 42px; height: 42px;
+    background: var(--red);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 6px rgba(230,64,64,0.12), 0 2px 8px rgba(230,64,64,0.3);
+    animation: micPulse 2.5s ease-in-out infinite;
+  }
+
+  @keyframes micPulse {
+    0%,100% { box-shadow: 0 0 0 6px rgba(230,64,64,0.12), 0 2px 8px rgba(230,64,64,0.3); }
+    50% { box-shadow: 0 0 0 10px rgba(230,64,64,0.06), 0 2px 8px rgba(230,64,64,0.3); }
+  }
+
+  .pp-mic svg { width: 18px; height: 18px; fill: none; stroke: white; stroke-width: 2.2; stroke-linecap: round; }
+
+  .pp-voice-label { font-size: 12.5px; font-weight: 600; color: var(--text-1); margin-bottom: 3px; }
+  .pp-voice-eg { font-size: 11px; color: var(--text-3); font-style: italic; }
+
+  .pp-toggles { padding: 8px 14px; border-bottom: 1px solid var(--border); }
+
+  .pp-toggle {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-light);
+    cursor: pointer;
+  }
+
+  .pp-toggle:last-child { border-bottom: none; }
+
+  .pp-toggle-left { display: flex; align-items: center; gap: 9px; }
+
+  .pp-toggle-icon {
+    width: 26px; height: 26px;
+    background: var(--bg); border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .pp-toggle-icon svg { width: 13px; height: 13px; fill: none; stroke: var(--text-2); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .pp-toggle.on .pp-toggle-icon { background: var(--red-dim); }
+  .pp-toggle.on .pp-toggle-icon svg { stroke: var(--red); }
+
+  .pp-toggle-name { font-size: 12.5px; font-weight: 500; color: var(--text-1); }
+  .pp-toggle-desc { font-size: 10.5px; color: var(--text-3); }
+
+  .ios-sw {
+    width: 34px; height: 20px;
+    background: var(--border);
+    border-radius: 100px; position: relative; flex-shrink: 0;
+    transition: background 0.2s;
+  }
+
+  .ios-sw::after {
+    content: '';
+    position: absolute;
+    top: 2px; left: 2px;
+    width: 16px; height: 16px;
+    background: white; border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.18);
+    transition: transform 0.2s;
+  }
+
+  .pp-toggle.on .ios-sw { background: var(--red); }
+  .pp-toggle.on .ios-sw::after { transform: translateX(14px); }
+
+  .pp-bars { padding: 12px 14px; border-bottom: 1px solid var(--border); }
+  .pp-bars-label { font-size: 10px; font-weight: 700; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 9px; }
+
+  .pp-site-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .pp-site { font-size: 12px; font-weight: 600; color: var(--text-1); display: flex; align-items: center; gap: 6px; }
+  .pp-fav { width: 14px; height: 14px; background: #ddd; border-radius: 3px; font-size: 9px; display: flex; align-items: center; justify-content: center; color: #666; }
+  .pp-score { font-size: 11.5px; font-weight: 700; background: #FFF4E5; color: #C96A00; padding: 2px 9px; border-radius: 100px; }
+
+  .mini-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+  .mini-bar:last-child { margin-bottom: 0; }
+  .mini-lbl { font-size: 10.5px; color: var(--text-3); width: 86px; flex-shrink: 0; }
+  .mini-track { flex: 1; height: 4px; background: var(--bg); border-radius: 100px; overflow: hidden; }
+  .mini-fill { height: 100%; border-radius: 100px; }
+  .fill-r { background: var(--red); width: 38%; }
+  .fill-o { background: #FF9500; width: 67%; }
+  .fill-g { background: #34C759; width: 88%; }
+  .mini-val { font-size: 10.5px; font-weight: 600; color: var(--text-2); width: 28px; text-align: right; }
+
+  .pp-footer {
+    padding: 10px 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .pp-foot-link { font-size: 11.5px; color: var(--text-3); cursor: pointer; font-weight: 500; transition: color 0.14s; }
+  .pp-foot-link:hover { color: var(--text-2); }
+
+  .pp-fix {
+    flex: 1; background: var(--red); color: white;
+    border: none; font-family: inherit; font-size: 12.5px; font-weight: 700;
+    padding: 8px 14px; border-radius: 8px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    box-shadow: 0 2px 8px rgba(230,64,64,0.25); transition: all 0.14s;
+  }
+
+  .pp-fix:hover { background: var(--red-hover); }
+  .pp-fix svg { width: 13px; height: 13px; fill: none; stroke: white; stroke-width: 2.5; stroke-linecap: round; }
+
+  /* ─────────────────────────────────────
+     STATS BAR
+  ───────────────────────────────────── */
+  .stats-bar {
+    background: white;
+    border-bottom: 1px solid var(--border);
+    padding: 0 48px;
+  }
+
+  .stats-bar-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    border-left: 1px solid var(--border);
+  }
+
+  .stat-item {
+    flex: 1;
+    padding: 28px 36px;
+    border-right: 1px solid var(--border);
+    text-align: left;
+  }
+
+  .stat-num {
+    font-size: 34px;
+    font-weight: 800;
+    color: var(--text-1);
+    letter-spacing: -1.2px;
+    margin-bottom: 4px;
+  }
+
+  .stat-num .red { color: var(--red); }
+
+  .stat-label {
+    font-size: 13px;
+    color: var(--text-3);
+    font-weight: 500;
+  }
+
+  /* ─────────────────────────────────────
+     FEATURES
+  ───────────────────────────────────── */
+  #features { background: var(--bg); }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-top: 52px;
+  }
+
+  .feat-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 26px;
+    transition: box-shadow 0.18s, transform 0.18s;
+    cursor: default;
+  }
+
+  .feat-card:hover {
+    box-shadow: 0 8px 28px rgba(0,0,0,0.09);
+    transform: translateY(-3px);
+  }
+
+  .feat-card.large {
+    grid-column: span 2;
+  }
+
+  .feat-icon {
+    width: 44px; height: 44px;
+    background: var(--red-dim);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 18px;
+  }
+
+  .feat-icon svg { width: 22px; height: 22px; fill: none; stroke: var(--red); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+  .feat-title { font-size: 17px; font-weight: 700; color: var(--text-1); letter-spacing: -0.4px; margin-bottom: 8px; }
+  .feat-desc { font-size: 14px; color: var(--text-2); line-height: 1.6; }
+
+  .feat-tag {
+    display: inline-flex;
+    margin-top: 14px;
+    background: var(--red-dim);
+    border: 1px solid var(--red-border);
+    color: var(--red);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 100px;
+    letter-spacing: 0.2px;
+  }
+
+  /* ─────────────────────────────────────
+     HOW IT WORKS
+  ───────────────────────────────────── */
+  #how { background: white; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    margin-top: 52px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    background: white;
+  }
+
+  .step {
+    padding: 36px 32px;
+    border-right: 1px solid var(--border);
+    position: relative;
+  }
+
+  .step:last-child { border-right: none; }
+
+  .step-num {
+    width: 36px; height: 36px;
+    background: var(--red);
+    color: white;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+    font-weight: 800;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 8px rgba(230,64,64,0.28);
+  }
+
+  .step-title { font-size: 17px; font-weight: 700; color: var(--text-1); letter-spacing: -0.4px; margin-bottom: 10px; }
+  .step-desc { font-size: 14px; color: var(--text-2); line-height: 1.62; }
+
+  /* ─────────────────────────────────────
+     TESTIMONIALS
+  ───────────────────────────────────── */
+  #testimonials { background: var(--bg); }
+
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-top: 52px;
+  }
+
+  .t-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 26px;
+  }
+
+  .t-stars { color: var(--red); font-size: 14px; margin-bottom: 14px; letter-spacing: 1px; }
+
+  .t-text { font-size: 14.5px; color: var(--text-1); line-height: 1.65; margin-bottom: 18px; font-weight: 400; }
+
+  .t-author { display: flex; align-items: center; gap: 10px; }
+
+  .t-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  .t-name { font-size: 13px; font-weight: 600; color: var(--text-1); }
+  .t-role { font-size: 12px; color: var(--text-3); }
+
+  /* ─────────────────────────────────────
+     CTA SECTION
+  ───────────────────────────────────── */
+  #cta {
+    background: var(--text-1);
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  #cta .section-title { color: white; }
+  #cta .section-sub { color: rgba(255,255,255,0.55); max-width: 480px; font-size: 16px; margin-bottom: 36px; }
+  #cta .section-tag-text { color: rgba(230,64,64,0.85); }
+  #cta .section-tag { background: rgba(230,64,64,0.1); border-color: rgba(230,64,64,0.2); }
+  #cta .section-tag-dot { background: var(--red); }
+
+  .cta-btns { display: flex; align-items: center; gap: 14px; }
+
+  .btn-cta {
+    font-size: 15px; font-weight: 600; color: white;
+    padding: 14px 30px; border-radius: 11px; cursor: pointer;
+    border: none; background: var(--red); font-family: inherit;
+    display: inline-flex; align-items: center; gap: 10px;
+    box-shadow: 0 4px 16px rgba(230,64,64,0.35);
+    transition: all 0.15s;
+  }
+
+  .btn-cta:hover { background: var(--red-hover); transform: translateY(-1px); }
+
+  .btn-cta-ghost {
+    font-size: 15px; font-weight: 500; color: rgba(255,255,255,0.6);
+    cursor: pointer; background: none; border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 11px; padding: 13px 24px;
+    font-family: inherit; transition: all 0.15s;
+  }
+
+  .btn-cta-ghost:hover { color: white; border-color: rgba(255,255,255,0.25); }
+
+  /* ─────────────────────────────────────
+     FOOTER
+  ───────────────────────────────────── */
+  footer {
+    background: var(--text-1);
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding: 32px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .footer-logo { display: flex; align-items: center; gap: 9px; }
+  .footer-logo-mark { width: 26px; height: 26px; background: var(--red); border-radius: 7px; display: flex; align-items: center; justify-content: center; }
+  .footer-logo-mark svg { width: 14px; height: 14px; fill: none; stroke: white; stroke-width: 2.5; stroke-linecap: round; }
+  .footer-logo-name { font-size: 15px; font-weight: 700; color: white; letter-spacing: -0.4px; }
+
+  .footer-links { display: flex; gap: 24px; }
+  .footer-link { font-size: 13px; color: rgba(255,255,255,0.4); cursor: pointer; text-decoration: none; transition: color 0.14s; }
+  .footer-link:hover { color: rgba(255,255,255,0.7); }
+
+  .footer-copy { font-size: 12.5px; color: rgba(255,255,255,0.25); }
+
+  /* ─────────────────────────────────────
+     SCROLLED NAV STATE
+  ───────────────────────────────────── */
+  nav.scrolled {
+    box-shadow: 0 1px 12px rgba(0,0,0,0.07);
+  }
+</style>
+</head>
+<body>
+
+<!-- ── NAVIGATION ── -->
+<nav id="navbar">
+  <a class="nav-logo" href="#">
+    <div class="nav-logo-mark">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+    </div>
+    <span class="nav-logo-name">AccessAI</span>
+  </a>
+
+  <div class="nav-links">
+    <a class="nav-link" href="#features">Features</a>
+    <a class="nav-link" href="#how">How it works</a>
+    <a class="nav-link" href="#testimonials">Reviews</a>
+    <a class="nav-link" href="#cta">Pricing</a>
+  </div>
+
+  <div class="nav-cta">
+    <a class="btn-primary" href="#">
+      Add to Chrome — Free
+      <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section id="hero">
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="hero-badge">
+        <span class="hero-badge-chip">FREE</span>
+        <span class="hero-badge-text">Chrome Extension · WCAG 2.1 Certified</span>
+      </div>
+      <h1 class="hero-h1">The web,<br>accessible to<br><span class="red">everyone.</span></h1>
+      <p class="hero-p">Voice navigation, smart screen reading, and real-time UI simplification — working on any website, with zero setup. Built for users with visual, motor, or cognitive disabilities.</p>
+      <div class="hero-btns">
+        <button class="btn-hero">
+          🌐 Add to Chrome — It's free
+        </button>
+        <button class="btn-hero-ghost">
+          Watch demo →
+        </button>
+      </div>
+    </div>
+
+    <!-- Extension Popup Preview -->
+    <div class="popup-preview">
+      <div class="pp-header">
+        <div class="pp-logo">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+        </div>
+        <div>
+          <div class="pp-title">AccessAI</div>
+          <div class="pp-sub">Accessibility Layer</div>
+        </div>
+        <div class="pp-status">
+          <div class="pp-status-dot"></div>
+          Active
+        </div>
+      </div>
+
+      <div class="pp-voice">
+        <div class="pp-mic">
+          <svg viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="13" rx="3"/><path d="M5 10a7 7 0 0014 0M12 19v3"/></svg>
+        </div>
+        <div>
+          <div class="pp-voice-label">Say a command</div>
+          <div class="pp-voice-eg">"Click search", "Read page", "Go back"</div>
+        </div>
+      </div>
+
+      <div class="pp-toggles">
+        <div class="pp-toggle on" onclick="this.classList.toggle('on')">
+          <div class="pp-toggle-left">
+            <div class="pp-toggle-icon">
+              <svg viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="13" rx="3"/><path d="M5 10a7 7 0 0014 0"/></svg>
+            </div>
+            <div>
+              <div class="pp-toggle-name">Voice Control</div>
+              <div class="pp-toggle-desc">Hands-free navigation</div>
+            </div>
+          </div>
+          <div class="ios-sw"></div>
+        </div>
+        <div class="pp-toggle on" onclick="this.classList.toggle('on')">
+          <div class="pp-toggle-left">
+            <div class="pp-toggle-icon">
+              <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </div>
+            <div>
+              <div class="pp-toggle-name">Screen Reader</div>
+              <div class="pp-toggle-desc">Enhanced ARIA narration</div>
+            </div>
+          </div>
+          <div class="ios-sw"></div>
+        </div>
+        <div class="pp-toggle" onclick="this.classList.toggle('on')">
+          <div class="pp-toggle-left">
+            <div class="pp-toggle-icon">
+              <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            </div>
+            <div>
+              <div class="pp-toggle-name">Simplified UI</div>
+              <div class="pp-toggle-desc">Strip complex layouts</div>
+            </div>
+          </div>
+          <div class="ios-sw"></div>
+        </div>
+        <div class="pp-toggle" onclick="this.classList.toggle('on')">
+          <div class="pp-toggle-left">
+            <div class="pp-toggle-icon">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+            <div>
+              <div class="pp-toggle-name">Focus Highlights</div>
+              <div class="pp-toggle-desc">Outline interactive zones</div>
+            </div>
+          </div>
+          <div class="ios-sw"></div>
+        </div>
+      </div>
+
+      <div class="pp-bars">
+        <div class="pp-bars-label">Current Page</div>
+        <div class="pp-site-row">
+          <div class="pp-site"><div class="pp-fav">N</div> nytimes.com</div>
+          <div class="pp-score">Score: 62</div>
+        </div>
+        <div class="mini-bar">
+          <div class="mini-lbl">Alt text</div>
+          <div class="mini-track"><div class="mini-fill fill-o"></div></div>
+          <div class="mini-val">67%</div>
+        </div>
+        <div class="mini-bar">
+          <div class="mini-lbl">Contrast</div>
+          <div class="mini-track"><div class="mini-fill fill-r"></div></div>
+          <div class="mini-val">38%</div>
+        </div>
+        <div class="mini-bar">
+          <div class="mini-lbl">Keyboard nav</div>
+          <div class="mini-track"><div class="mini-fill fill-g"></div></div>
+          <div class="mini-val">88%</div>
+        </div>
+      </div>
+
+      <div class="pp-footer">
+        <span class="pp-foot-link">Settings</span>
+        <button class="pp-fix">
+          Auto-fix Page
+          <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+        <span class="pp-foot-link">Help</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURES ── -->
+<section id="features">
+  <div class="section-inner">
+    <div class="section-tag">
+      <div class="section-tag-dot"></div>
+      <span class="section-tag-text">Features</span>
+    </div>
+    <h2 class="section-title">Everything you need,<br>built <span class="red">right in.</span></h2>
+    <p class="section-sub">AccessAI works invisibly in the background, enhancing every site you visit without changing how it looks — unless you need it to.</p>
+
+    <div class="features-grid">
+      <div class="feat-card large">
+        <div class="feat-icon">
+          <svg viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="13" rx="3"/><path d="M5 10a7 7 0 0014 0M12 19v3M8 22h8"/></svg>
+        </div>
+        <div class="feat-title">Voice Navigation</div>
+        <div class="feat-desc">Navigate any website entirely with your voice. Click buttons, fill forms, scroll pages, follow links, and search — all without touching a mouse or keyboard. Powered by advanced intent detection, not just keyword matching.</div>
+        <span class="feat-tag">🎙 Hands-free</span>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon">
+          <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
+        <div class="feat-title">Smart Screen Reader</div>
+        <div class="feat-desc">Enhanced ARIA labels and intelligent page narration that actually describes what's on screen — not just raw HTML attributes.</div>
+        <span class="feat-tag">📖 Visual assist</span>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        </div>
+        <div class="feat-title">UI Simplifier</div>
+        <div class="feat-desc">Strips cluttered, overwhelming layouts into clean, structured, easily navigable pages. Removes visual noise, not content.</div>
+        <span class="feat-tag">🧠 Cognitive assist</span>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </div>
+        <div class="feat-title">Page Analysis</div>
+        <div class="feat-desc">Real-time WCAG scoring with one-click auto-fix for contrast failures, missing labels, broken tab order, and keyboard traps.</div>
+        <span class="feat-tag">📊 Audit & fix</span>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+        </div>
+        <div class="feat-title">Focus Mode</div>
+        <div class="feat-desc">High-visibility outlines on all interactive elements. Keyboard navigation made obvious and predictable on every site.</div>
+        <span class="feat-tag">⌨️ Motor assist</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ── -->
+<section id="how">
+  <div class="section-inner">
+    <div class="section-tag">
+      <div class="section-tag-dot"></div>
+      <span class="section-tag-text">How it works</span>
+    </div>
+    <h2 class="section-title">Three steps.<br><span class="red">Zero friction.</span></h2>
+    <p class="section-sub">No configuration files. No site-by-site setup. AccessAI works automatically the moment you install it.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-title">Install the extension</div>
+        <div class="step-desc">One click from the Chrome Web Store. No account required, no permissions beyond what's needed to read and modify the current page.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-title">Browse normally</div>
+        <div class="step-desc">AccessAI silently analyzes every page you visit, enhancing ARIA labels, fixing contrast, and preparing voice command maps in the background.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-title">Speak or simplify</div>
+        <div class="step-desc">Click the extension icon to see your accessibility score, toggle features on or off, use voice commands, or apply one-click fixes to any page.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-logo">
+    <div class="footer-logo-mark">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+    </div>
+    <span class="footer-logo-name">AccessAI</span>
+  </div>
+
+  <div class="footer-links">
+    <a class="footer-link" href="#">Privacy</a>
+    <a class="footer-link" href="#">Terms</a>
+    <a class="footer-link" href="#">Accessibility</a>
+    <a class="footer-link" href="#">Support</a>
+    <a class="footer-link" href="#">GitHub</a>
+  </div>
+
+  <div class="footer-copy">© 2026 AccessAI. All rights reserved.</div>
+</footer>
+
+<script>
+  // Sticky nav shadow on scroll
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 10);
+  });
+
+  // Smooth anchor scroll
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+</script>
+</body>
+</html>
